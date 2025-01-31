@@ -2,20 +2,29 @@ const { json } = require("express");
 const express = require("express");
 const cors = require("cors");
 
+const corsConfing = {
+  origin: "*",
+  credential: true,
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE"]
+}
+
+app.options("", cors(corsConfing));
+
 require("dotenv").config();
 
+const port = process.env.PORT || 8000;
 
-const productRouter  = require("./routes/product");
-const loginRouter  = require("./routes/auth");
-const billRouter  = require("./routes/sell");
-const stockRouter  = require("./routes/stock");
-const {connectDB}  = require("./config");
+const productRouter = require("./routes/product");
+const loginRouter = require("./routes/auth");
+const billRouter = require("./routes/sell");
+const stockRouter = require("./routes/stock");
+const { connectDB } = require("./config");
 
 connectDB(process.env.MONGODB_URI);
 const app = express();
 
 app.use(json());
-app.use(cors());
+app.use(cors(corsConfing));
 app.use(express.json());
 
 // Routes
@@ -25,6 +34,6 @@ app.use("/api/v1/product", productRouter);
 app.use("/api/v1/stock", stockRouter);
 app.use("/api/v1/", loginRouter);
 
-app.listen(9090, () => {
-  console.log("Sever Is Running On Port 9090");
+app.listen(port, () => {
+  console.log(`Sever Is Running On Port ${port}`);
 });
