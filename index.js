@@ -8,8 +8,6 @@ const corsConfing = {
   methods: ["GET", "POST", "PATCH", "PUT", "DELETE"]
 }
 
-app.options("", cors(corsConfing));
-
 require("dotenv").config();
 
 const port = process.env.PORT || 8000;
@@ -22,6 +20,8 @@ const { connectDB } = require("./config");
 
 connectDB(process.env.MONGODB_URI);
 const app = express();
+
+app.options("", cors(corsConfing));
 
 app.use(json());
 app.use(cors(corsConfing));
