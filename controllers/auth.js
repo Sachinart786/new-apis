@@ -16,14 +16,9 @@ const handleRegister = async (req, res) => {
     const payload = { name, email, password: hashedPassword };
     const newUser = new User(payload);
     await newUser.save();
-    const token = jwt.sign(
-      { userId: newUser._id, email: newUser.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
     res
       .status(201)
-      .send({ message: "Register Successfully", token, success: true });
+      .send({ message: "Register Successfully", success: true });
   } catch (error) {
     console.error(error);
     res.status(500).send("Server Error");
