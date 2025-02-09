@@ -1,15 +1,15 @@
 const Product = require("../models/product");
 
 const handleAddProducts = async (req, res) => {
-  try {
-    const { name, pricePerUnit } = req.body;
+  const { name, pricePerUnit } = req.body;
 
-    if (!name || !pricePerUnit || !Array.isArray(pricePerUnit)) {
-      return res.status(400).send({
-        message: "Invalid input: name and pricePerUnit (array) are required.",
-        success: false,
-      });
-    }
+  if (!name || !pricePerUnit || !Array.isArray(pricePerUnit)) {
+    return res.status(400).send({
+      message: "Invalid input: name and pricePerUnit (array) are required.",
+      success: false,
+    });
+  }
+  try {
     const product = await Product.findOne({
       name: { $regex: new RegExp(`^${name}$`, "i") },
     });
@@ -136,9 +136,33 @@ const handleDeleteTasks = async (req, res) => {
   }
 };
 
+const handleSearchProducts = async (req, res) => {
+  const name = req.query.name;
+  if (!name) {
+    return res
+      .status(400)
+      .send({ success: false, message: "Product name is required" });
+  }
+  try {
+    const product = await Product.find({
+      name: { $regex: name, $options: "i" },
+    });
+    if (product.length === 0) {
+      return res
+        .status(404)
+        .send({ success: true, message: "No Reacord Found" });
+    } else {
+      res.status(200).send({ data: product, success: true });
+    }
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 module.exports = {
   handleAddProducts,
   handleGetProducts,
   handleUpdateProducts,
   handleDeleteTasks,
+  handleSearchProducts,
 };

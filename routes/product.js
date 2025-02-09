@@ -6,6 +6,7 @@ const {
   handleGetProducts,
   handleUpdateProducts,
   handleDeleteTasks,
+  handleSearchProducts
 } = require("../controllers/product");
 
 router.route("/").post(handleAddProducts).get(verifyToken, handleGetProducts);
@@ -15,6 +16,6 @@ router
   .patch(handleUpdateProducts)
   .delete(verifyToken, handleDeleteTasks);
 
-// router.delete("/:id", handleDeleteTasks);
+router.get("/search", handleSearchProducts);
 
 module.exports = router;
