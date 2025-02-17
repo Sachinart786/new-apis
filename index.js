@@ -13,6 +13,7 @@ require("dotenv").config();
 const port = process.env.PORT || 8000;
 
 const productRouter = require("./routes/product");
+const productsRouter = require("./routes/products");
 const loginRouter = require("./routes/auth");
 const billRouter = require("./routes/sell");
 const stockRouter = require("./routes/stock");
@@ -31,6 +32,7 @@ app.use(express.json());
 
 app.use("/api/v1/bill", billRouter);
 app.use("/api/v1/product", productRouter);
+app.use("/api/v1/products", productsRouter);
 app.use("/api/v1/stock", stockRouter);
 app.use("/api/v1/auth", loginRouter);
 
