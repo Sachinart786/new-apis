@@ -33,10 +33,35 @@ const handleAddProducts = async (req, res) => {
   }
 };
 
+// const handleGetProducts = async (req, res) => {
+//   try {
+//     const products = await Product.find({});
+//     res.status(200).send({ data: products, success: true });
+//   } catch (error) {
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
+
 const handleGetProducts = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
   try {
-    const products = await Product.find({});
-    res.status(200).send({ data: products, success: true });
+    const skip = (page - 1) * limit;
+    const products = await Product.find({})
+      .skip(skip)
+      .limit(Number(limit))
+      .exec();
+
+    const totalProducts = await Product.countDocuments();
+
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    res.status(200).send({
+      data: products,
+      success: true,
+      page: Number(page),
+      totalPages,
+      totalProducts,
+    });
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
