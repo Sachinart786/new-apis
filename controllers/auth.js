@@ -5,8 +5,7 @@ const bcrypt = require("bcryptjs");
 const handleRegister = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    console.log("email", email);
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email });
     if (user) {
       return res
         .status(400)
@@ -27,7 +26,7 @@ const handleRegister = async (req, res) => {
 const handleLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email });
     if (user) {
       const match = await bcrypt.compare(password, user.password);
       if (match) {

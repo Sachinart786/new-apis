@@ -184,35 +184,59 @@ const handleAddAlbums = async (req, res) => {
   }
 };
 
-
 const handleGetAllAlbums = async (req, res) => {
-    const { page = 1, limit = 10 } = req.query;
-    try {
-      const skip = (page - 1) * limit;
-      const albums = await Album.find({})
-        .skip(skip)
-        .limit(Number(limit))
-        .exec();
-  
-      const totalAlbums = await Album.countDocuments();
-  
-      const totalPages = Math.ceil(totalAlbums / limit);
-  
-      res.status(200).send({
-        data: albums,
-        success: true,
-        page: Number(page),
-        totalPages,
-        totalAlbums,
-      });
-    } catch (error) {
-      console.error("Error fetching albums:", error);
-      res.status(500).send({
-        message: "Internal Server Error",
+  const { page = 1, limit = 10 } = req.query;
+  try {
+    const skip = (page - 1) * limit;
+    const albums = await Album.find({}).skip(skip).limit(Number(limit)).exec();
+
+    const totalAlbums = await Album.countDocuments();
+
+    const totalPages = Math.ceil(totalAlbums / limit);
+
+    res.status(200).send({
+      data: albums,
+      success: true,
+      page: Number(page),
+      totalPages,
+      totalAlbums,
+    });
+  } catch (error) {
+    console.error("Error fetching albums:", error);
+    res.status(500).send({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
+
+const handleGetAlbum = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const album = await Album.findById({ _id: id });
+
+    if (!album) {
+      return res.status(404).send({
+        message: "Album not found",
         success: false,
       });
     }
-  };
-  
+    res.status(200).send({
+      data: album,
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error fetching album:", error); // Log the error to the console
+    res.status(500).send({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
 
-module.exports = { handleAddAlbums, handleGetAllAlbums, upload };
+module.exports = {
+  handleAddAlbums,
+  handleGetAllAlbums,
+  handleGetAlbum,
+  upload,
+};
