@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const { GridFSBucket } = require("mongodb");
 
-const { connectDB } = require("../config");
+const { connectClientDB } = require("../config");
 
-connectDB(process.env.MONGODB_URI);
+connectClientDB(process.env.MONGODB_URI);
 
 const handleDownload = async (req, res) => {
   const { id } = req.params;

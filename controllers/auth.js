@@ -2,12 +2,10 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-// const multer  = require('multer')
-// const upload = multer({ dest: 'uploads/' })
-
 const handleRegister = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    console.log("email", email);
     const user = await User.findOne({ email: email });
     if (user) {
       return res
