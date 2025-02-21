@@ -14,6 +14,7 @@ const port = process.env.PORT || 8000;
 
 const productRouter = require("./routes/product");
 const fileRouter = require("./routes/file");
+const albumRouter = require("./routes/albums");
 const productsRouter = require("./routes/products");
 const loginRouter = require("./routes/auth");
 const billRouter = require("./routes/sell");
@@ -37,6 +38,7 @@ app.use("/api/v1/products", productsRouter);
 app.use("/api/v1/stock", stockRouter);
 app.use("/api/v1/auth", loginRouter);
 app.use("/api/v1/download", fileRouter);
+app.use("/api/v1/albums", albumRouter);
 
 app.listen(port, () => {
   console.log(`Sever Is Running On Port ${port}`);
