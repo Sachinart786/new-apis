@@ -188,7 +188,7 @@ const handleGetAllAlbums = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   try {
     const skip = (page - 1) * limit;
-    const albums = await Album.find({}).skip(skip).limit(Number(limit)).exec();
+    const albums = await Album.find({}).skip(skip).sort({ createdAt: -1 }).limit(Number(limit)).exec();
 
     const totalAlbums = await Album.countDocuments();
 
