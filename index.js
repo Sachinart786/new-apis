@@ -12,13 +12,10 @@ require("dotenv").config();
 
 const port = process.env.PORT || 8000;
 
-const productRouter = require("./routes/product");
+
 const fileRouter = require("./routes/file");
 const albumRouter = require("./routes/albums");
-const productsRouter = require("./routes/products");
 const loginRouter = require("./routes/auth");
-const billRouter = require("./routes/sell");
-const stockRouter = require("./routes/stock");
 const { connectDB } = require("./config");
 
 connectDB(process.env.MONGODB_URI);
@@ -31,11 +28,6 @@ app.use(cors(corsConfing));
 app.use(express.json());
 
 // Routes
-
-app.use("/api/v1/bill", billRouter);
-app.use("/api/v1/product", productRouter);
-app.use("/api/v1/products", productsRouter);
-app.use("/api/v1/stock", stockRouter);
 app.use("/api/v1/auth", loginRouter);
 app.use("/api/v1/download", fileRouter);
 app.use("/api/v1/albums", albumRouter);
