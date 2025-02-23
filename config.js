@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { MongoClient, GridFSBucket } = require("mongodb");
+const { MongoClient } = require("mongodb");
 
 const connectDB = async (url) => {
   return mongoose

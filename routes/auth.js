@@ -9,6 +9,5 @@ const {
 router.post("/login", handleLogin);
 router.post("/register", handleRegister);
 router.post("/logout", handleLogout);
-// router.route("/").post(handleRegister).post(handleLogin).post(handleLogout);
 
 module.exports = router;
