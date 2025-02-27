@@ -181,6 +181,7 @@ const handleSearchAlbum = async (req, res) => {
 
 const handleMail = async (req, res) => {
   const { name, email, price } = req.body;
+
   if (!name || !email || !price) {
     return res.status(400).json({ message: "Missing required fields" });
   }
@@ -199,23 +200,21 @@ const handleMail = async (req, res) => {
       },
     });
 
-    // Email options
     const mailOptions = {
-      from: process.env.EMAIL_USER, // Sender's email (your email address)
-      to: '90sflac@gmail.com', // Fixed recipient email
-      subject: 'Activate Membership', // Subject of the email
-      text: `Welcome to 90'sflac.info!\n\nName: ${name}\nEmail: ${email}\nPrice: ${price}`, // Plain text body
-      html: `<p><strong>Welcome to 90'sflac.info!</strong></p><p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Price:</strong> ${price}</p>`, // HTML content
-      replyTo: email,
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Activate Membership',
+      text: `Welcome to 90'sflac.info!\n\nName: ${name}\nEmail: ${email}\nPrice: ${price}`,  // Plain text body
+      html: `<p><strong>Welcome to 90'sflac.info!</strong></p><p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Price:</strong> ${price}</p>`,  // HTML content
+      replyTo: process.env.EMAIL_USER,
     };
 
-    // Send the email
     const info = await transporter.sendMail(mailOptions);
 
     return res.status(200).json({
       message: 'Email sent successfully',
       data: info,
-      success: false,
+      success: true,
     });
 
   } catch (error) {
@@ -223,7 +222,7 @@ const handleMail = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Error sending email',
-      error: error.message, // Provide the specific error message
+      error: error.message,
     });
   }
 };
