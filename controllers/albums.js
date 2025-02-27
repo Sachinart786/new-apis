@@ -1,12 +1,11 @@
 const Album = require("../models/albums");
+const nodemailer = require("nodemailer");
 
 const handleAddAlbums = async (req, res) => {
   const { title, tracks, music, lyric, year, playingTime, totalSize } =
     req.body;
 
   const image = req.file ? req.file.filename : null;
-
-  console.log("image", image);
 
   if (
     !title ||
@@ -127,19 +126,48 @@ const handleGetAlbum = async (req, res) => {
 
 const handleSearchAlbum = async (req, res) => {
   const { name } = req.params;
-  try {
-    const album = await Album.find({
-      title: { $regex: name, $options: "i" },
-    });
 
-    if (!album) {
+  try {
+    const albums = await Album.find({
+      title: { $regex: name, $options: "i" },
+    })
+
+    if (albums.length === 0) {
       return res.status(404).send({
-        message: "Album not found",
+        message: "No albums found",
         success: false,
       });
     }
+
+    const binarySearch = (arr, query) => {
+      let low = 0;
+      let high = arr.length - 1;
+
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        const comparison = arr[mid].title.toLowerCase().localeCompare(query.toLowerCase());
+
+        if (comparison === 0) {
+          return mid;
+        } else if (comparison < 0) {
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+      return -1;
+    };
+
+    const searchResultIndex = binarySearch(albums, name);
+    if (searchResultIndex === -1) {
+      return res.status(404).send({
+        message: "Album not found using binary search",
+        success: false,
+      });
+    }
+
     res.status(200).send({
-      data: album,
+      data: albums[searchResultIndex],
       success: true,
     });
   } catch (error) {
@@ -151,9 +179,58 @@ const handleSearchAlbum = async (req, res) => {
   }
 };
 
+const handleMail = async (req, res) => {
+  const { name, email, price } = req.body;
+  if (!name || !email || !price) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: "Invalid email format" });
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    // Email options
+    const mailOptions = {
+      from: process.env.EMAIL_USER, // Sender's email (your email address)
+      to: '90sflac@gmail.com', // Fixed recipient email
+      subject: 'Activate Membership', // Subject of the email
+      text: `Welcome to 90'sflac.info!\n\nName: ${name}\nEmail: ${email}\nPrice: ${price}`, // Plain text body
+      html: `<p><strong>Welcome to 90'sflac.info!</strong></p><p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Price:</strong> ${price}</p>`, // HTML content
+      replyTo: email,
+    };
+
+    // Send the email
+    const info = await transporter.sendMail(mailOptions);
+
+    return res.status(200).json({
+      message: 'Email sent successfully',
+      info, // Include info about the email (like accepted recipients)
+    });
+
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return res.status(500).json({
+      message: 'Error sending email',
+      error: error.message, // Provide the specific error message
+    });
+  }
+};
+
+
 module.exports = {
   handleAddAlbums,
   handleGetAllAlbums,
   handleGetAlbum,
   handleSearchAlbum,
+  handleMail,
 };
