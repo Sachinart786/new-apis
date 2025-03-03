@@ -2,12 +2,11 @@ const Album = require("../models/albums");
 const nodemailer = require("nodemailer");
 
 const handleAddAlbums = async (req, res) => {
-  const { title, tracks, music, lyric, year, playingTime, totalSize } =
+  const { id, title, tracks, music, lyric, year, playingTime, totalSize, image } =
     req.body;
 
-  const image = req.file ? req.file.filename : null;
-
   if (
+    !id ||
     !title ||
     !Array.isArray(tracks) ||
     tracks.length === 0 ||
@@ -48,6 +47,7 @@ const handleAddAlbums = async (req, res) => {
       });
     } else {
       const newAlbum = new Album({
+        id,
         title,
         tracks,
         music,
@@ -55,7 +55,7 @@ const handleAddAlbums = async (req, res) => {
         year,
         playingTime,
         totalSize,
-        image: image || "",
+        image,
       });
 
       await newAlbum.save();
@@ -116,7 +116,7 @@ const handleGetAlbum = async (req, res) => {
       success: true,
     });
   } catch (error) {
-    console.error("Error fetching album:", error); // Log the error to the console
+    console.error("Error fetching album:", error);
     res.status(500).send({
       message: "Internal Server Error",
       success: false,
@@ -204,7 +204,7 @@ const handleMail = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: 'Activate Membership',
-      text: `Welcome to 90'sflac.info!\n\nName: ${name}\nEmail: ${email}\nPrice: ${price}`,  // Plain text body
+      text: `Welcome to 90'sflac.info!\n\nName: ${name}\nEmail: ${email}\nPrice: ${price}`,
       html: `<p><strong>Welcome to 90'sflac.info!</strong></p><p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Price:</strong> ${price}</p>`,  // HTML content
       replyTo: process.env.EMAIL_USER,
     };
