@@ -1,3 +1,112 @@
+// const mongoose = require("mongoose");
+// const multer = require('multer');
+// const { GridFsStorage } = require('multer-gridfs-storage');
+// const Grid = require('gridfs-stream');
+// const crypto = require('crypto');
+// const path = require('path');
+
+// const conn = mongoose.createConnection(process.env.MONGODB_URI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+
+// let gfs;
+// conn.once('open', () => {
+//   gfs = Grid(conn.db, mongoose.mongo);
+//   gfs.collection('uploads');
+// });
+
+// // Modified GridFsStorage configuration to keep the original file name
+// const storage = new GridFsStorage({
+//   url: process.env.MONGODB_URI,
+//   file: (req, file) => {
+//     return new Promise((resolve, reject) => {
+//       const fileInfo = {
+//         filename: file.originalname, // Using the original file name
+//         bucketName: 'uploads',
+//       };
+//       resolve(fileInfo);
+//     });
+//   },
+// });
+
+// const upload = multer({
+//   storage,
+//   limits: { fileSize: 1000 * 1024 * 1024 }, // 1 GB size limit
+//   fileFilter: (req, file, cb) => {
+//     const allowedTypes = ['application/zip', 'application/x-zip-compressed'];
+//     if (!allowedTypes.includes(file.mimetype)) {
+//       return cb(new Error('Only zip files are allowed!'), false);
+//     }
+//     cb(null, true);
+//   },
+// });
+
+// const handleUpload = (req, res) => {
+//   console.log("Handling upload...");
+//   upload.single('file')(req, res, (err) => {
+//     if (err) {
+//       console.log("Error in upload:", err.message);
+//       return res.status(400).json({ error: err.message });
+//     }
+
+//     if (!req.file) {
+//       console.log("No file uploaded");
+//       return res.status(400).json({ error: "No file uploaded" });
+//     }
+
+//     console.log("File uploaded successfully:", req.file);
+//     return res.json({ file: req.file });
+//   });
+// };
+
+// const handleDownload = (req, res) => {
+//   const fileId = req.params.id;
+
+//   gfs.files.findOne({ _id: mongoose.Types.ObjectId(fileId) }, (err, file) => {
+//     if (err) {
+//       console.log("Error finding file:", err);
+//       return res.status(500).json({ err: 'Internal server error' });
+//     }
+
+//     if (!file) {
+//       console.log("No file found with that ID");
+//       return res.status(404).json({
+//         err: 'No file exists with that ID',
+//       });
+//     }
+
+//     console.log("Found file:", file);
+
+//     res.set('Content-Type', file.contentType);
+//     res.set('Content-Disposition', `attachment; filename="${file.filename}"`);
+    
+//     res.setTimeout(5 * 60 * 1000, () => {  // Set to 5 minutes for large files
+//       console.log("Connection timeout");
+//       return res.status(408).send("Request timed out");
+//     });
+
+//     const readstream = gfs.createReadStream({ _id: file._id });
+//     readstream.pipe(res);
+
+//     readstream.on('error', (err) => {
+//       console.log("Error streaming the file:", err);
+//       return res.status(500).json({ err: 'Error streaming the file' });
+//     });
+
+//     readstream.on('end', () => {
+//       console.log("File download completed successfully");
+//     });
+
+//     res.on('close', () => {
+//       console.log("Client connection closed prematurely");
+//     });
+//   });
+// };
+
+// module.exports = { handleUpload, handleDownload };
+
+
 const mongoose = require("mongoose");
 const multer = require('multer');
 const { GridFsStorage } = require('multer-gridfs-storage');
@@ -12,7 +121,7 @@ const conn = mongoose.createConnection(process.env.MONGODB_URI, {
 
 let gfs;
 conn.once('open', () => {
-  gfs = Grid(conn.db, mongoose.mongo);
+  gfs = Grid(conn.db, mongoose.mongo);  // Corrected: Passing mongoose.mongo here
   gfs.collection('uploads');
 });
 
