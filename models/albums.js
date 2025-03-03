@@ -18,8 +18,10 @@ const albumSchema = new Schema({
   year: { type: String, required: true },
   playingTime: { type: String, required: true },
   totalSize: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now },
-});
+},
+  {
+    timestamps: true
+  });
 
 const Album = mongoose.model("albums", albumSchema);
 module.exports = Album;

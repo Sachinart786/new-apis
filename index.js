@@ -29,7 +29,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/v1/auth", loginRouter);
-app.use("/api/v1/download", fileRouter);
+app.use("/api/v1/files", fileRouter);
 app.use("/api/v1/albums", albumRouter);
 
 app.listen(port, () => {
