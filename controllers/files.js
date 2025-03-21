@@ -1,3 +1,4 @@
+const path = require('path');
 const mongoose = require("mongoose");
 const { GridFSBucket } = require("mongodb");
 
@@ -21,14 +22,11 @@ async function connectClientDB(uri) {
 const handleDownload = async (req, res) => {
   const { id } = req.params;
   try {
-    // Establish a database connection using the connectClientDB function
     const db = await connectClientDB(process.env.MONGODB_URI);
     
-    // Set up the GridFS bucket
     const bucket = new GridFSBucket(db, { bucketName: "fs" });
     const fileId = mongoose.Types.ObjectId(id);  // Convert the id to ObjectId
     
-    // Open the download stream
     const downloadStream = bucket.openDownloadStream(fileId);
 
     // Error handler for download stream
@@ -56,4 +54,70 @@ const handleDownload = async (req, res) => {
   }
 };
 
-module.exports = { handleDownload };
+const handleAudioPlay = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const db = await connectClientDB(process.env.MONGODB_URI);
+
+    const bucket = new GridFSBucket(db, { bucketName: "fs" });
+    const fileId = mongoose.Types.ObjectId(id); // Convert the id to ObjectId
+
+    // Find the file in the collection
+    const file = await db.collection("fs.files").findOne({ _id: fileId });
+    
+    if (!file) {
+      return res.status(404).send("Audio file not found");
+    }
+
+    // Check if contentType is defined, if not infer it from the file extension
+    let contentType = file.contentType;
+    if (!contentType) {
+      // Infer contentType based on the file extension
+      const extname = path.extname(file.filename).toLowerCase();
+      switch (extname) {
+        case '.mp3':
+          contentType = 'audio/mpeg';
+          break;
+        case '.flac':
+          contentType = 'audio/flac';
+          break;
+        case '.wav':
+          contentType = 'audio/wav';
+          break;
+        case '.ogg':
+          contentType = 'audio/ogg';
+          break;
+        default:
+          contentType = 'application/octet-stream'; // Fallback to generic type
+      }
+    }
+
+    // Check if the contentType starts with 'audio/'
+    if (!contentType.startsWith("audio/")) {
+      return res.status(400).send("File is not an audio file");
+    }
+
+    // Set the headers for audio streaming
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Disposition", `inline; filename="${file.filename}"`);
+
+    const audioStream = bucket.openDownloadStream(fileId);
+
+    // Pipe the audio stream to the response for playback
+    audioStream.pipe(res);
+    
+    // Error handler for audio streaming
+    audioStream.on("error", (err) => {
+      console.log("Error streaming audio:", err);
+      return res.status(404).send("Error streaming audio");
+    });
+
+  } catch (err) {
+    console.error("Error connecting to the database or streaming audio:", err);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+
+module.exports = { handleDownload, handleAudioPlay };

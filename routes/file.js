@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { handleDownload } = require("../controllers/files");
-
-// router.post("/upload", handleUpload);
+const { handleDownload, handleAudioPlay } = require("../controllers/files");
 
 router.get("/download/:id", handleDownload);
+router.get("/play/:id", handleAudioPlay);
 
 module.exports = router;
