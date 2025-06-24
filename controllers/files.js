@@ -1,35 +1,29 @@
-const path = require('path');
-const mongoose = require("mongoose");
-const { GridFSBucket } = require("mongodb");
+import path from 'path';
+import mongoose from 'mongoose';
+import { GridFSBucket } from 'mongodb';
 
-// MongoDB connection function
-async function connectClientDB(uri) {
+const connectClientDB = async (uri) => {
   try {
-    // Connecting to MongoDB
-    const client = await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(uri);
     console.log('Database connected successfully');
-    return client.connection.db; // Return the DB instance
+    return mongoose.connection.db;
   } catch (err) {
     console.error('Error connecting to database:', err);
-    throw err; // Propagate the error for handling in the route
+    throw err;
   }
-}
+};
 
-// Handle file download
-const handleDownload = async (req, res) => {
+export const handleDownload = async (req, res) => {
   const { id } = req.params;
   try {
     const db = await connectClientDB(process.env.MONGODB_URI);
-    
+
     const bucket = new GridFSBucket(db, { bucketName: "fs" });
     const fileId = mongoose.Types.ObjectId(id);  // Convert the id to ObjectId
-    
+
     const downloadStream = bucket.openDownloadStream(fileId);
 
-    // Error handler for download stream
+
     downloadStream.on("error", (err) => {
       console.log("Error during download:", err);
       return res.status(404).send("File not found");
@@ -54,7 +48,7 @@ const handleDownload = async (req, res) => {
   }
 };
 
-const handleAudioPlay = async (req, res) => {
+export const handleAudioPlay = async (req, res) => {
   const { id } = req.params;
   try {
     const db = await connectClientDB(process.env.MONGODB_URI);
@@ -64,7 +58,7 @@ const handleAudioPlay = async (req, res) => {
 
     // Find the file in the collection
     const file = await db.collection("fs.files").findOne({ _id: fileId });
-    
+
     if (!file) {
       return res.status(404).send("Audio file not found");
     }
@@ -105,7 +99,7 @@ const handleAudioPlay = async (req, res) => {
 
     // Pipe the audio stream to the response for playback
     audioStream.pipe(res);
-    
+
     // Error handler for audio streaming
     audioStream.on("error", (err) => {
       console.log("Error streaming audio:", err);
@@ -117,7 +111,3 @@ const handleAudioPlay = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
-
-
-module.exports = { handleDownload, handleAudioPlay };

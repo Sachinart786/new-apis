@@ -1,8 +1,8 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const { handleDownload, handleAudioPlay } = require("../controllers/files");
+import { handleDownload, handleAudioPlay } from "../controllers/files.js";
 
 router.get("/download/:id", handleDownload);
 router.get("/play/:id", handleAudioPlay);
 
-module.exports = router;
+export default router;

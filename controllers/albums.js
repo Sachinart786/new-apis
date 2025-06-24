@@ -1,7 +1,6 @@
-const Album = require("../models/albums");
-const nodemailer = require("nodemailer");
+import { Album } from "../models/albums.js";
 
-const handleAddAlbums = async (req, res) => {
+export const handleAddAlbums = async (req, res) => {
   const { id, title, tracks, music, lyric, year, playingTime, totalSize, image } =
     req.body;
 
@@ -74,7 +73,7 @@ const handleAddAlbums = async (req, res) => {
   }
 };
 
-const handleGetAllAlbums = async (req, res) => {
+export const handleGetAllAlbums = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   try {
     const skip = (page - 1) * limit;
@@ -100,7 +99,7 @@ const handleGetAllAlbums = async (req, res) => {
   }
 };
 
-const handleGetAlbum = async (req, res) => {
+export const handleGetAlbum = async (req, res) => {
   const { id } = req.params;
   try {
     const album = await Album.findById({ _id: id });
@@ -124,7 +123,7 @@ const handleGetAlbum = async (req, res) => {
   }
 };
 
-const handleSearchAlbum = async (req, res) => {
+export const handleSearchAlbum = async (req, res) => {
   const { name } = req.params;
 
   try {
@@ -179,59 +178,50 @@ const handleSearchAlbum = async (req, res) => {
   }
 };
 
-const handleMail = async (req, res) => {
-  const { name, email, price } = req.body;
+// export const handleMail = async (req, res) => {
+//   const { name, email, price } = req.body;
 
-  if (!name || !email || !price) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
+//   if (!name || !email || !price) {
+//     return res.status(400).json({ message: "Missing required fields" });
+//   }
 
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({ message: "Invalid email format" });
-  }
+//   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+//   if (!emailRegex.test(email)) {
+//     return res.status(400).json({ message: "Invalid email format" });
+//   }
 
-  try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+//   try {
+//     const transporter = nodemailer.createTransport({
+//       service: 'gmail',
+//       auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS,
+//       },
+//     });
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Activate Membership',
-      text: `Welcome to 90'sflac.info!\n\nName: ${name}\nEmail: ${email}\nPrice: ${price}`,
-      html: `<p><strong>Welcome to 90'sflac.info!</strong></p><p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Price:</strong> ${price}</p>`,  // HTML content
-      replyTo: process.env.EMAIL_USER,
-    };
+//     const mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: email,
+//       subject: 'Activate Membership',
+//       text: `Welcome to 90'sflac.info!\n\nName: ${name}\nEmail: ${email}\nPrice: ${price}`,
+//       html: `<p><strong>Welcome to 90'sflac.info!</strong></p><p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Price:</strong> ${price}</p>`,  // HTML content
+//       replyTo: process.env.EMAIL_USER,
+//     };
 
-    const info = await transporter.sendMail(mailOptions);
+//     const info = await transporter.sendMail(mailOptions);
 
-    return res.status(200).json({
-      message: 'Email sent successfully',
-      data: info,
-      success: true,
-    });
+//     return res.status(200).json({
+//       message: 'Email sent successfully',
+//       data: info,
+//       success: true,
+//     });
 
-  } catch (error) {
-    console.error('Error sending email:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error sending email',
-      error: error.message,
-    });
-  }
-};
-
-
-module.exports = {
-  handleAddAlbums,
-  handleGetAllAlbums,
-  handleGetAlbum,
-  handleSearchAlbum,
-  handleMail,
-};
+//   } catch (error) {
+//     console.error('Error sending email:', error);
+//     return res.status(500).json({
+//       success: false,
+//       message: 'Error sending email',
+//       error: error.message,
+//     });
+//   }
+// };

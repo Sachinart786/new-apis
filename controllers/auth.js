@@ -1,8 +1,8 @@
-const User = require("../models/user");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+import { User } from "../models/user.js";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
-const handleRegister = async (req, res) => {
+export const handleRegister = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const user = await User.findOne({ email });
@@ -23,7 +23,7 @@ const handleRegister = async (req, res) => {
   }
 };
 
-const handleLogin = async (req, res) => {
+export const handleLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -32,15 +32,14 @@ const handleLogin = async (req, res) => {
       if (match) {
         const token = jwt.sign(
           { userId: user._id, email: user.email },
-          process.env.JWT_SECRET,
-          { expiresIn: "1h" }
+          process.env.JWT_SECRET
         );
         res.send({ message: "Login Successfully", token, success: true });
       } else {
-        res.status(400).send({ message: "Invalid Credentials" });
+        res.status(401).send({ message: "Invalid Credentials" });
       }
     } else {
-      res.status(400).send({ message: "User Not Registered" });
+      res.status(401).send({ message: "User Not Registered" });
     }
   } catch (error) {
     console.error(error);
@@ -48,7 +47,7 @@ const handleLogin = async (req, res) => {
   }
 };
 
-const handleLogout = (req, res) => {
+export const handleLogout = (req, res) => {
   try {
     res.clearCookie("token");
     res.send({ message: "Logged out successfully", success: true });
@@ -57,5 +56,3 @@ const handleLogout = (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-
-module.exports = { handleRegister, handleLogin, handleLogout };

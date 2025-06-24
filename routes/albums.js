@@ -1,16 +1,29 @@
-const express = require("express");
-const router = express.Router();
-const {
+import express from "express";
+import {
   handleAddAlbums,
   handleGetAllAlbums,
   handleGetAlbum,
   handleSearchAlbum,
-  handleMail
-} = require("../controllers/albums");
+  // handleMail
+} from "../controllers/albums.js";
+import { verifyToken } from "../middlewares/auth.js";
 
-router.route("/").post(handleAddAlbums).get(handleGetAllAlbums);
-router.route("/:id").get(handleGetAlbum);
-router.route("/search/:name").get(handleSearchAlbum);
-router.post("/account", handleMail);
+const router = express.Router();
 
-module.exports = router;
+router
+  .route("/")
+  .post(handleAddAlbums)
+  .get(verifyToken, handleGetAllAlbums);
+
+router
+  .route("/:id")
+  .get(handleGetAlbum);
+
+router
+  .route("/search/:name")
+  .get(handleSearchAlbum);
+
+// router
+//   .post("/account", handleMail);
+
+export default router;

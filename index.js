@@ -1,27 +1,29 @@
-const { json } = require("express");
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import { json } from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 
 const corsConfing = {
   origin: "*",
-  credential: true,
+  credentials: true,
   methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
 };
 
-require("dotenv").config();
+dotenv.config();
 
 const port = process.env.PORT || 8000;
 
 
-const fileRouter = require("./routes/file");
-const albumRouter = require("./routes/albums");
-const loginRouter = require("./routes/auth");
-const { connectDB } = require("./config");
+import fileRouter from "./routes/file.js";
+import albumRouter from "./routes/albums.js";
+import loginRouter from "./routes/auth.js";
+import { connectDB } from "./config.js";
+
 
 connectDB(process.env.MONGODB_URI);
 const app = express();
 
-app.options("", cors(corsConfing));
+app.options("*", cors(corsConfing));
 
 app.use(json());
 app.use(cors(corsConfing));

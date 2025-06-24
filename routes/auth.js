@@ -1,13 +1,13 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const {
+import {
   handleRegister,
   handleLogin,
   handleLogout,
-} = require("../controllers/auth");
+} from "../controllers/auth.js";
 
 router.post("/login", handleLogin);
 router.post("/register", handleRegister);
 router.post("/logout", handleLogout);
 
-module.exports = router;
+export default router;

@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
-const { MongoClient } = require("mongodb");
+import mongoose from "mongoose";
+import { MongoClient } from "mongodb";
 
-const connectDB = async (url) => {
+export const connectDB = async (url) => {
   return mongoose
     .connect(url, {
       useNewUrlParser: true,
@@ -11,7 +11,7 @@ const connectDB = async (url) => {
     .catch((err) => console.log("DB Connection Failed", err));
 };
 
-const connectClientDB = async (url) => {
+export const connectClientDB = async (url) => {
   const client = new MongoClient(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -19,5 +19,3 @@ const connectClientDB = async (url) => {
   await client.connect();
   return client.db();
 };
-
-module.exports = { connectDB, connectClientDB };
