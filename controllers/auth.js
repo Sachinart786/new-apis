@@ -14,8 +14,7 @@ export const handleRegister = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const payload = { userName, password: hashedPassword };
-    const newAdmin = new Admin(payload);
-    await newAdmin.save();
+    await Admin.create(payload);
     res.status(201).send({ message: "Register Successfully", success: true });
   } catch (error) {
     console.error(error);
