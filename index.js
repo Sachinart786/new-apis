@@ -76,7 +76,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import path from "path"; // ✅ Add this import
+import path from "path";
 import "./config/index.js";
 
 import loginRouter from "./routes/auth.js";
