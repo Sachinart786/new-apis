@@ -17,8 +17,7 @@ export const handleRegister = async (req, res) => {
     await Admin.create(payload);
     res.status(201).send({ message: "Register Successfully", success: true });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    res.status(500).send("Server Error", error);
   }
 };
 
@@ -41,8 +40,7 @@ export const handleLogin = async (req, res) => {
       res.status(401).send({ message: "Admin Not Registered" });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    res.status(500).send("Server Error", error);
   }
 };
 
@@ -51,7 +49,6 @@ export const handleLogout = (req, res) => {
     res.clearCookie("token");
     res.send({ message: "Logged out successfully", success: true });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    res.status(500).send("Server Error", error);
   }
 };

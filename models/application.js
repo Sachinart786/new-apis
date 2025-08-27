@@ -1,13 +1,20 @@
-import mongoose from "mongoose";
-const Schema = mongoose.Schema;
+import mongoose, { Schema } from "mongoose";
+
+const fileSchema = new Schema({
+  data: Buffer,
+  contentType: String,
+});
 
 const applicationSchema = new Schema(
   {
     // Personal Information
     fullName: { type: String, required: true },
-    dob: { type: Date, required: true }, // better as Date
+    dob: { type: Date, required: true },
     gender: { type: String, enum: ["Male", "Female", "Other"] },
-    maritalStatus: { type: String, enum: ["Single", "Married", "Divorced", "Widowed"] },
+    maritalStatus: {
+      type: String,
+      enum: ["Single", "Married", "Divorced", "Widowed"],
+    },
     nationality: { type: String },
     religion: { type: String },
     caste: { type: String },
@@ -26,18 +33,18 @@ const applicationSchema = new Schema(
     experience: { type: String },
     languages: [{ type: String }],
 
-    // Document Uploads (store file paths)
+    // Document Uploads
     files: {
-      photo: String,
-      aadhar: String,
-      pan: String,
-      educationCertificate: [{ type: String }],
-      experienceLetter: [{ type: String }],
-      driving: String,
-      resume: String,
-      passbook: String,
-      policeVerification: String,
-      signature: String,
+      photo: fileSchema,
+      aadhar: fileSchema,
+      pan: fileSchema,
+      educationCertificate: [fileSchema],
+      experienceLetter: [fileSchema],
+      driving: fileSchema,
+      resume: fileSchema,
+      passbook: fileSchema,
+      policeVerification: fileSchema,
+      signature: fileSchema,
     },
   },
   { timestamps: true }
