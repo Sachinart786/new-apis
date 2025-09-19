@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 router.get("/", getApplications);
-router.get("/:id/file/:field", getApplicationFile); // e.g. /123/file/resume?index=0
+router.get("/:id/file/:field", getApplicationFile);
 router.route("/:id")
     .get(getApplicationById)
     .put(updateApplication)
