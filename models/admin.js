@@ -11,10 +11,6 @@ const adminSchema = new Schema({
         type: String,
         required: true,
     }
-}
-    ,
-    {
-        timestamps: true
-    });
+});
 
 export const Admin = mongoose.model('admins', adminSchema);
