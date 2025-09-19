@@ -11,16 +11,10 @@ import adminRouter from "./routes/admin.js";
 const API_VERSION = "v1";
 
 const endpoints = {
-  auth: {
-    login: `api/${API_VERSION}/auth`,
-  },
-  application: {
-    login: `api/${API_VERSION}/application`,
-  },
-  admin: {
-    admin: `api/${API_VERSION}/admin`,
-  },
-}
+  auth: `api/${API_VERSION}/auth`,
+  application: `api/${API_VERSION}/application`,
+  admin: `api/${API_VERSION}/admin`,
+};
 
 const corsConfig = {
   origin: "*",
@@ -45,9 +39,9 @@ app.use(json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // ✅ API Routes
-app.use(endpoints.auth.login, loginRouter);
-app.use(endpoints.application.application, applicationRouter);
-app.use(endpoints.admin.admin, adminRouter);
+app.use(endpoints.auth, loginRouter);
+app.use(endpoints.application, applicationRouter);
+app.use(endpoints.admin, adminRouter);
 
 // ✅ Start server
 app.listen(port, () => console.log(`🚀 Server running on http://localhost:${port}`));

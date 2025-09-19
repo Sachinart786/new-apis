@@ -25,28 +25,23 @@ export const handleLogin = async (req, res) => {
   try {
     const { userName, password } = req.body;
 
-    // 1. Check if user exists
     const user = await Admin.findOne({ userName });
     if (!user) {
       return res.status(401).json({ message: "Admin Not Registered", success: false });
     }
 
-    // 2. Verify password
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res.status(401).json({ message: "Invalid Credentials", success: false });
     }
 
-    // 3. Create JWT payload
     const payload = {
       userId: user._id,
       userName: user.userName,
     };
 
-    // 4. Sign JWT with expiry
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    // 5. Send token as secure cookie
     res.cookie("token", token, {
       httpOnly: true,       // Prevents JS access
       secure: process.env.NODE_ENV === "production", // Send over HTTPS only in production
@@ -54,7 +49,6 @@ export const handleLogin = async (req, res) => {
       maxAge: 60 * 60 * 1000, // 1 hour
     });
 
-    // 6. Send response without exposing token
     return res.json({
       message: "Login Successful",
       success: true,
