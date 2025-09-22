@@ -7,13 +7,15 @@ import {
     deleteApplication,
 } from "../controllers/admin.js";
 
+import { verifyToken } from "../middleware/authMiddleware.js";
+
 const router = Router();
 
-router.get("/", getApplications);
-router.get("/:id/file/:field", getApplicationFile);
+router.get("/", verifyToken, getApplications);
+router.get("/:id/file/:field", verifyToken, getApplicationFile);
 router.route("/:id")
-    .get(getApplicationById)
-    .put(updateApplication)
-    .delete(deleteApplication);
+    .get(verifyToken, getApplicationById)
+    .put(verifyToken, updateApplication)
+    .delete(verifyToken, deleteApplication);
 
 export default router;
