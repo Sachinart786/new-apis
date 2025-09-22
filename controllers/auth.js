@@ -43,10 +43,11 @@ export const handleLogin = async (req, res) => {
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     res.cookie("token", token, {
-      httpOnly: true,       // Prevents JS access
-      secure: process.env.NODE_ENV === "production", // Send over HTTPS only in production
-      sameSite: "Strict",   // CSRF protection
-      maxAge: 60 * 60 * 24 * 1000, // 1 day
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "Strict" : "Lax",
+      maxAge: 60 * 60 * 24 * 1000,
+      path: "/"
     });
 
     return res.json({
