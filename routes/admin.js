@@ -7,7 +7,7 @@ import {
     deleteApplication,
 } from "../controllers/admin.js";
 
-import { verifyToken } from "../middleware/authMiddleware.js";
+import { verifyToken } from "../middlewares/auth.js";
 
 const router = Router();
 
