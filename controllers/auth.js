@@ -46,7 +46,7 @@ export const handleLogin = async (req, res) => {
       httpOnly: true,       // Prevents JS access
       secure: process.env.NODE_ENV === "production", // Send over HTTPS only in production
       sameSite: "Strict",   // CSRF protection
-      maxAge: 60 * 60 * 1000, // 1 hour
+      maxAge: 60 * 60 * 24 * 1000, // 1 day
     });
 
     return res.json({
@@ -56,15 +56,23 @@ export const handleLogin = async (req, res) => {
 
   } catch (error) {
     console.error("Login Error:", error);
-    return res.status(500).json({ message: "Server Error", success: false });
+    return res.status(500).json({ message: error, success: false });
   }
 };
 
 export const handleLogout = (req, res) => {
   try {
     res.clearCookie("token");
-    res.send({ message: "Logged out successfully", success: true });
+    return res.json({
+      message: "Logged out successfully",
+      success: true,
+    });
   } catch (error) {
-    res.status(500).send("Server Error", error);
+    console.error("Logout Error:", error);
+    return res.status(500).json({
+      message: "Server Error",
+      error: error.message,
+      success: false,
+    });
   }
 };
